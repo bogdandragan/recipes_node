@@ -28,6 +28,9 @@ const categorySchema = new Schema({
     articles:[articleSchema]
 });
 
+categorySchema.indexes({ parent: 1, children: 1 });
+
+
 categorySchema.statics.populateParentNodes = function (id){
     const categoryModel = this;
 

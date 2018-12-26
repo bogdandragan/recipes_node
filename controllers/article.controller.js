@@ -27,7 +27,7 @@ exports.getById = function (req, res, next) {
             return res.send({type: 'fail', description : `article id [${articleId}] not found`});
         }
         const article = category.articles.id(articleId);
-        res.send({type: 'ok', article: article});
+        res.send({type: 'ok', article});
     })
 };
 
@@ -73,7 +73,7 @@ exports.getPathToArticle = function (req, res, next) {
             return res.send({type: 'fail', description : `article id [${articleId}] not found`});
         }
         Category.populateParentNodes(category._id).then((path) => {
-            res.send({ type: "ok", path:path})
+            res.send({ type: "ok", path})
         }).catch((err) => {
             next(err);
         });

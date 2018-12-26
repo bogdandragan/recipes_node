@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+mongoose.set('useFindAndModify', false);
 mongoose.connect('mongodb://localhost/recipebook', { useNewUrlParser: true });
 mongoose.Promise = global.Promise;
 

@@ -10,6 +10,9 @@ const categoryValidation = require('../validations/category.validation');
 const recipeValidation = require('../validations/recipe.validation');
 const articleValidation = require('../validations/article.validation');
 
+
+router.get('/categories', categoryCtrl.fetchAllCategories);
+
 /**
  * Route creates category
  * @name post /crudtest/category
