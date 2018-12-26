@@ -1,4 +1,4 @@
-const Category = require('../models/category');
+const Category = require('../models/category.model');
 
 
 exports.create = function (req, res, next) {
@@ -33,8 +33,8 @@ exports.getById = function (req, res, next) {
 };
 
 exports.update = function (req, res, next) {
-    const recipe = req.body;
     const recipeId = req.params.id;
+    const recipe = req.body;
 
     Category.findOneAndUpdate({"recipes._id" : recipeId}, {$set: {"recipes.$.title" : recipe.title, "recipes.$.description" : recipe.description}}, {new: true}, (err, category) => {
         if (err) return next(err);
