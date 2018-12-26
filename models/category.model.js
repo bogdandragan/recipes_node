@@ -14,12 +14,12 @@ const articleSchema = new Schema({
 });
 
 const categorySchema = new Schema({
-    parent: {
+    parent: {                       //store parent ref to traverse to top of tree
         type: Schema.Types.ObjectId,
         ref: 'Category',
         default: null
     },
-    children: [{
+    children: [{                    //store children refs to traverse from top to down
         type: Schema.Types.ObjectId,
         ref: 'Category'
     }],
