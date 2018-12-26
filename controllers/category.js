@@ -1,7 +1,6 @@
 const Category = require('../models/category');
-var mongoose = require('mongoose');
 
-exports.category_create = function (req, res, next) {
+exports.create = function (req, res, next) {
     const parentId = req.body.parentId;
 
     let category = new Category(
@@ -14,7 +13,7 @@ exports.category_create = function (req, res, next) {
         }
     );
 
-    category.save(function (err, category) {
+    category.save((err, category) => {
         if (err) {
             return next(err);
         }
@@ -31,24 +30,82 @@ exports.category_create = function (req, res, next) {
     })
 };
 
-exports.category_get = function (req, res, next) {
-    Category.findById(req.params.id, function (err, category) {
+exports.getById = function (req, res, next) {
+    const categoryId = req.params.id
+
+    Category.findById(categoryId, (err, category) => {
         if (err) return next(err);
-        res.send(category);
+        if (!category){
+            return res.send({type: 'fail', description : `category id [${categoryId}] not found`});
+        }
+        res.send({ type: "ok", category:category});
     })
 };
 
-exports.category_update = function (req, res, next) {
-    const parentId = mongoose.Types.ObjectId(req.body.parentId);
-    Category.findByIdAndUpdate(req.params.id, {$set: {parent:req.body.parentId, name:req.body.name}}, function (err, product) {
+exports.update = function (req, res, next) {
+    const categoryId = req.params.id
+
+    Category.findByIdAndUpdate(categoryId, {$set: {name:req.body.name}}, {new: true}, (err, product) => {
         if (err) return next(err);
-        res.send('Product udpated.');
+        if (!category){
+            return res.send({type: 'fail', description : `category id [${categoryId}] not found`});
+        }
+        res.send({ type: "ok", category:category});
     });
 };
 
-exports.category_delete = function (req, res, next) {
-    Category.findByIdAndRemove(req.params.id, function (err) {
+exports.deleteById = function (req, res, next) {
+    const categoryId = req.params.id
+    Category.findByIdAndRemove(categoryId, (err, category) => {
         if (err) return next(err);
-        res.send('Deleted successfully!');
+        if (!category){
+            return res.send({type: 'fail', description : `category id [${categoryId}] not found`});
+        }
+        res.send({ type: "ok", id:category.id})
     })
 };
+
+exports.getPathToCategory = function (req, res, next) {
+    const categoryId = req.params.id;
+
+    Category.findById(categoryId, (err, category) => {
+        if (err) return next(err);
+        if (!category){
+            return res.send({type: 'fail', description : `category id [${categoryId}] not found`});
+        }
+        Category.populateParentNodes(category.parent).then((path) => {
+            console.log("res",path);
+            res.send({ type: "ok", path:path})
+        }).catch((err) => {
+            next(err);
+        });
+    })
+};
+
+exports.getCategoryRecipes = function (req, res, next) {
+    const categoryId = req.params.id;
+
+    Category.findById(categoryId, (err, category) => {
+        if (err) return next(err);
+        if (!category){
+            return res.send({type: 'fail', description : `category id [${categoryId}] not found`});
+        }
+        res.send({ type: "ok", recipes:category.recipes});
+
+    })
+};
+
+exports.getCategoryArticles = function (req, res, next) {
+    const categoryId = req.params.id;
+
+    Category.findById(categoryId, (err, category) => {
+        if (err) return next(err);
+        if (!category){
+            return res.send({type: 'fail', description : `category id [${categoryId}] not found`});
+        }
+        res.send({ type: "ok", recipes:category.articles});
+
+    })
+};
+
+

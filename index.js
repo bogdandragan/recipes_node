@@ -2,7 +2,6 @@ const express = require('express');
 const path = require('path');
 const http = require('http');
 const bodyParser = require('body-parser');
-//const RateLimit = require('express-rate-limit');
 
 const api = require('./routes/api');
 const crudTest = require('./routes/crudTest');
@@ -16,29 +15,27 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // Point static path to dist
-app.use(express.static(path.join(__dirname, './app/dist')));
+app.use(express.static(path.join(__dirname, './frontend/')));
 
-//var apiLimiter = new RateLimit({
-//    windowMs: 30*1000, // 30 seconds
-//    max: 1, // limit each IP to 1 requests per windowMs
-//    delayMs: 0 // disable delaying - full speed until the max limit is reached
-//});
 
 // Set api routes
-app.use('/api/', /*apiLimiter, */api);
-app.use('/crudtest/', /*apiLimiter, */crudTest);
+app.use('/api/', api);
+app.use('/crudtest/', crudTest);
 
 app.use(function(err, req, res, next) {
     console.log(err);
 
-    console.log(err.stack);
-    res.status(500).send('Something broke!');
+    if (err.status) {
+        res.status(err.status).send(`${err.status} : ${err.statusText} (${err.message})`)
+    }  else {
+        res.status(500).send(`Internal Server Error : (${err.message})`);
+    }
 });
 
 
 // Catch all other routes and return the index file
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, './app/dist/index.html'));
+    res.sendFile(path.join(__dirname, './frontend/index.html'));
 });
 
 /**
